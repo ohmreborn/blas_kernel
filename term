@@ -1,0 +1,18 @@
+
+#[cfg(target_arch = "aarch64")]
+#[target_feature(enable = "neon")]
+pub unsafe fn daxpy(N:usize, a:f64, x:&Vec<f64>, icx:usize, y:&mut Vec<f64>, icy:usize){
+    use std::arch::aarch64::{float64x2_t, vfma_f64, vfmaq_f64, vld1q_f64, vst1q_f64};
+    let arr_a:[f64;2] = [a;2];
+    let mut i:usize = 0;
+    unsafe {
+        let arr_a: float64x2_t = vld1q_f64(&arr_a);
+        while i < N{
+            let arr_x: float64x2_t = vld1q_f64(&x[i]);
+            let arr_y: float64x2_t = vld1q_f64(&y[i]);
+            let arr_z: float64x2_t = vfmaq_f64(arr_a, arr_x, arr_y);
+            vst1q_f64(&mut y[i] arr_z);
+        }
+    }
+}
+
